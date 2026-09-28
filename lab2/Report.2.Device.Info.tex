@@ -1,0 +1,71 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{utf8}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\title{Labwork 2 Report: Get to Know Your GPU}
+\author{Le Hoai Nam \\ Student ID: 2540079}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+In this labwork, I used the \texttt{numba.cuda} Python library to query and inspect the hardware specifications of the GPU available on my local machine.
+
+\section{Implementation}
+I created a Python script named \texttt{labwork2.py}. The code detects the CUDA-capable GPU, selects the primary device, and retrieves hardware details such as device name, multiprocessor count, and memory status.
+
+Below is the Python code used:
+\begin{lstlisting}[language=Python]
+import numba
+from numba import cuda
+
+def main():
+    if not cuda.is_available():
+        print("CUDA is not available")
+        return
+    
+    cuda.detect()
+    device = cuda.select_device(0)
+    
+    dev_id = device.id
+    dev_name = device.name.decode('utf-8') if isinstance(device.name, bytes) else device.name
+    
+    print("Device ID:", dev_id)
+    print("Device Name:", dev_name)
+    
+    try:
+        mp_count = device.MULTIPROCESSOR_COUNT
+        print("Multiprocessors:", mp_count)
+    except AttributeError:
+        pass
+        
+    free_mem, total_mem = cuda.current_context().get_memory_info()
+    print("Total Memory (bytes):", total_mem)
+    print("Free Memory (bytes):", free_mem)
+    print("Total Memory (GB):", total_mem / (1024 ** 3))
+    print("Free Memory (GB):", free_mem / (1024 ** 3))
+
+if __name__ == "__main__":
+    main()
+\end{lstlisting}
+
+\section{Results}
+Running \texttt{labwork2.py} on my system produced the following output:
+
+\begin{itemize}
+    \item \textbf{Device ID:} 0
+    \item \textbf{Device Name:} NVIDIA GeForce GTX 1050
+    \item \textbf{Compute Capability:} 6.1
+    \item \textbf{Multiprocessors (SM):} 6
+    \item \textbf{Total Memory:} 2.94 GB (3,158,114,304 bytes)
+    \item \textbf{Free Memory:} 2.89 GB (3,100,508,160 bytes)
+    \item \textbf{FP16 Support:} Yes
+\end{itemize}
+
+\section{Conclusion}
+The script ran successfully on the local environment. The system's GPU is an NVIDIA GeForce GTX 1050 featuring 6 Streaming Multiprocessors and approximately 2.94 GB of VRAM.
+
+\end{document}

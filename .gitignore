@@ -1,0 +1,7 @@
+hpc/
+.venv/
+__pycache__/
+*.pdf
+*.aux
+*.log
+*.out
