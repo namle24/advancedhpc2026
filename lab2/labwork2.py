@@ -13,6 +13,9 @@ def main():
     try:
         mp_count = device.MULTIPROCESSOR_COUNT
         print("Multiprocessors:", mp_count)
+        cores_per_sm = 128
+        total_cores = mp_count * cores_per_sm
+        print("Total Cores:", total_cores)
     except AttributeError:
         pass
     free_mem, total_mem = cuda.current_context().get_memory_info()
