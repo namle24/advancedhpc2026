@@ -14,35 +14,39 @@ def main():
     img = plt.imread('input.jpg')
     if img.dtype == np.float32 or img.dtype == np.float64:
         img = (img * 255).astype(np.uint8)
-    h, w, c = img.shape
-    pixelCount = h * w
-    src = img.reshape(pixelCount, 3)
+    imageWidth = img.shape[1]
+    imageHeight = img.shape[0]
+    pixelCount = imageWidth * imageHeight
+    flatSrc = img.reshape(pixelCount, 3)
+
     t0 = time.time()
-    dst_cpu = np.zeros_like(src)
+    dst_cpu = np.zeros_like(flatSrc)
     for i in range(pixelCount):
-        g = np.uint8((src[i, 0] + src[i, 1] + src[i, 2]) / 3)
+        g = np.uint8((flatSrc[i, 0] + flatSrc[i, 1] + flatSrc[i, 2]) / 3)
         dst_cpu[i, 0] = dst_cpu[i, 1] = dst_cpu[i, 2] = g
     t_cpu = time.time() - t0
     print("CPU time:", t_cpu)
-    plt.imsave('cpu_gray_extra.jpg', dst_cpu.reshape(h, w, 3))
-    d_src = cuda.to_device(src)
-    d_dst = cuda.device_array_like(src)
+    plt.imsave('cpu_gray_extra.jpg', dst_cpu.reshape(imageHeight, imageWidth, 3))
+
+    devSrc = cuda.to_device(flatSrc)
+    devDst = cuda.device_array((pixelCount, 3), np.uint8)
+
     blockSizes = [32, 64, 128, 256, 512, 1024]
     gpuTimes = []
 
     for blockSize in blockSizes:
         gridSize = (pixelCount + blockSize - 1) // blockSize
-        grayscale[gridSize, blockSize](d_src, d_dst)
+        grayscale[gridSize, blockSize](devSrc, devDst)
         cuda.synchronize()
         t0 = time.time()
-        grayscale[gridSize, blockSize](d_src, d_dst)
+        grayscale[gridSize, blockSize](devSrc, devDst)
         cuda.synchronize()
         t_gpu = time.time() - t0
         gpuTimes.append(t_gpu)
         print("GPU time:", blockSize, t_gpu)
-    dst_gpu = d_dst.copy_to_host()
-    plt.imsave('gpu_gray_extra.jpg', dst_gpu.reshape(h, w, 3))
 
+    hostDst = devDst.copy_to_host()
+    plt.imsave('gpu_gray_extra.jpg', hostDst.reshape(imageHeight, imageWidth, 3))
     print("Speedup:", t_cpu / gpuTimes[3])
 
     plt.plot(blockSizes, gpuTimes, 'o-')
