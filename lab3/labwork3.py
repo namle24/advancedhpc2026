@@ -12,9 +12,6 @@ def grayscale(src, dst):
 
 def main():
     img = plt.imread('input.jpg')
-    if img.dtype == np.float32 or img.dtype == np.float64:
-        img = (img * 255).astype(np.uint8)
-
     h, w, _ = img.shape
     pixelCount = h * w
     flatSrc = img.reshape(pixelCount, 3)
