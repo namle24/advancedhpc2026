@@ -14,8 +14,8 @@
 I implemented three parallel Map algorithms on GPU using Numba CUDA based on the slides:
 \begin{enumerate}
     \item \textbf{Labwork 6a (Binarization)}: Calculated pixel grayscale value and applied threshold $\tau = 128$. Pixels above $\tau$ are set to 255 and below to 0.
-    \item \textbf{Labwork 6b (Brightness Control)}: Added a constant delta (+50) to each RGB channel and clamped the result within $[0, 255]$.
-    \item \textbf{Labwork 6c (Image Blending)}: Blended the original image with its horizontally flipped version using formula $Q(x,y) = c \cdot \Phi_1(x,y) + (1-c) \cdot \Phi_2(x,y)$ with weight $c = 0.6$.
+    \item \textbf{Labwork 6b (Brightness Control)}: Added a constant delta (+67) to each RGB channel and clamped the result within $[0, 255]$.
+    \item \textbf{Labwork 6c (Image Blending)}: Blended the original image with its horizontally flipped version using formula $Q(x,y) = c \cdot \Phi_1(x,y) + (1-c) \cdot \Phi_2(x,y)$ with weight $c = 0.67$.
 \end{enumerate}
 
 \section{Experimental Results}
