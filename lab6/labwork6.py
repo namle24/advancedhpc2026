@@ -45,8 +45,8 @@ def main():
     h, w, _ = img1.shape
 
     threshold = int(sys.argv[1]) if len(sys.argv)>1 else 128
-    brightness_delta=50
-    blend_c = 0.6
+    brightness_delta=67
+    blend_c = 0.67
 
     img2 = np.ascontiguousarray(np.flip(img1, axis=1))
 
